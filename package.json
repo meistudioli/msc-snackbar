@@ -1,0 +1,25 @@
+{
+  "name": "msc-snackbar",
+  "version": "1.0.0",
+  "description": "<msc-snackbar /> provide brief messages about app processes at the bottom of the screen. It's a web component and applied Material Design - Snackbar's spec.",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meistudioli/msc-snackbar.git"
+  },
+  "keywords": [
+    "web",
+    "front-end",
+    "web component",
+    "snackbar"
+  ],
+  "author": "Paul Li",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/meistudioli/msc-snackbar/issues"
+  },
+  "homepage": "https://github.com/meistudioli/msc-snackbar#readme"
+}
