@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Web Component: &lt;msc-snackbar /&gt; - web components based message indicate effect</title>
+<meta name="description" content="<msc-snackbar /> provide brief messages about app processes at the bottom of the screen. It's a web component and applied Material Design - Snackbar's spec." />
+<script type="module" src="mjs/wc-msc-snackbar.js"></script>
+<style>
+/* reset */
+div,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,legend,input,textarea,p,article,aside,figcaption,figure,nav,section,mark,audio,video,main{margin:0;padding:0}
+article,aside,figcaption,figure,nav,section,main{display:block}
+fieldset,img{border:0}
+address,caption,cite,em,strong{font-style:normal;font-weight:400}
+ol,ul{list-style:none}
+caption{text-align:left}
+h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:400}
+abbr{border:0;font-variant:normal}
+input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}
+body{-webkit-text-size-adjust:none}
+select,input,button,textarea{font:100% arial,helvetica,clean,sans-serif;}
+del{font-style:normal;text-decoration:none}
+pre{font-family:monospace;line-height:100%}
+progress{-webkit-appearance:none;appearance:none;overflow:hidden;border:0 none;}
+
+/* page */
+html,body{font-family:system-ui,sans-serif;text-size-adjust:100%;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;font-size:16px;}
+#hd,#ft{display:none;}
+
+body{position:relative;inline-size:100vw;block-size:100vh;}
+.triggers{position:absolute;inset-inline-start:50%;inset-block-start:50%;inline-size:260px;transform:translate(-50%,-50%);}
+.ypp-trigger{font-size:1.125em;color:#b60845;width:100%;height:2.77em;line-height:2.55;box-sizing:border-box;border:2px solid #b60845;border-radius:2.77em;text-align:center;text-transform:uppercase;transition:color 250ms ease,border-color 250ms ease;will-change:color,border-color;cursor:pointer;letter-spacing:.2em;display:block;user-select:none;text-decoration:none}
+.ypp-trigger:hover{font-weight:400;color:#db004d;border-color:#db004d;}
+.ypp-trigger{--ripple-color:rgba(182,8,69,.2);--duration:1.2s;}
+
+.ypp-trigger:nth-of-type(1){color:#4a8af1;border-color:#4a8af1;--ripple-color:rgba(74,138,241,.2);}
+.ypp-trigger:nth-of-type(1):hover{color:#1b71fa;border-color:#1b71fa;}
+
+.ypp-trigger:nth-of-type(2){color:#b60845;border-color:#b60845;--ripple-color:rgba(112,58,217,.2);}
+.ypp-trigger:nth-of-type(2):hover{color:#db004d;border-color:#db004d;}
+
+.ypp-trigger+.ypp-trigger{margin-top:2em;}
+
+.ypp-wrap{position:fixed;inset-inline-start:0;inset-block-start:0;inline-size:0;block-size:0;background-color:#fff;z-index:1000;pointer-events:none;overflow:hidden;}
+.ypp-wrap--active{inline-size:100%;block-size:100%;pointer-events:auto;}
+
+/* msc-snackbar */
+msc-snackbar:not(:defined){display:none;}
+@supports (bottom:env(safe-area-inset-top)) {
+  msc-snackbar {
+    --msc-snackbar-margin-block-end: calc(env(safe-area-inset-bottom) + 16px);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="triggers">
+  <a href="#showSnackbar" class="ypp-trigger" data-type="basic">Basic</a>
+  <a href="#showSnackbar" class="ypp-trigger" data-type="staced">Stacked</a>
+</div>
+
+<msc-snackbar>
+  <script type="application/json">
+    {
+      "active": false,
+      "stack": false,
+      "label": "message here",
+      "action": {
+        "content": "ok",
+        "hidden": false,
+        "params": {
+          "id": "mei"
+        }
+      },
+      "dismiss": {
+        "auto": true,
+        "hidden": false,
+        "duration": 8000
+      }
+    }
+  </script>
+</msc-snackbar>
+
+<script>
+customElements.whenDefined('msc-snackbar').then(() => {
+  const events = ['msc-snackbar-action-click', 'msc-snackbar-dissmiss'];
+  const snackbar = document.querySelector('msc-snackbar');
+  const hero = document.querySelector('.triggers');
+
+  const handler = (evt) => {
+    console.log(evt);
+  };
+
+  events.forEach(
+    (eventName) => {
+      snackbar.addEventListener(eventName, handler);
+    }
+  );
+
+  hero.addEventListener('click',
+    (evt) => {
+      const anchor = evt.target.closest('a');
+
+      if (!anchor) {
+        return;
+      }
+
+      evt.preventDefault();
+
+      if (anchor.dataset.type === 'basic') {
+        snackbar.label = 'This is basic usage. Put message here to let user aware.';
+        snackbar.stack = false;
+      } else {
+        snackbar.label = 'This Snackbar will render as stacked view for other usage.';
+        snackbar.stack = true;
+      }
+
+      snackbar.active = true;
+    }
+  )
+});
+</script>
+
+</body>
+
+</html>

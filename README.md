@@ -1,6 +1,7 @@
 # msc-snackbar
 
-[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/msc-snackbar) [![DeepScan grade](https://deepscan.io/api/teams/16372/projects/22012/branches/644916/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=16372&pid=22012&bid=644916)
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/msc-snackbar) [![DeepScan grade](https://deepscan.io/api/teams/16372/projects/22133/branches/651098/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=16372&pid=22133&bid=651098)
+
 
 &lt;msc-snackbar /> provide brief messages about app processes at the bottom of the screen. It's a web component and applied Material Design - Snackbar's spec.
 
