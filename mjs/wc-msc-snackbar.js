@@ -265,13 +265,13 @@ export class MscSnackbar extends HTMLElement {
 
       case 'action': {
         const { btnAction } = this.#nodes;
-        btnAction.textContent = this?.action?.content || defaults.action.content;
-        btnAction.hidden = this?.action?.hidden;
+        btnAction.textContent = this.action.content || defaults.action.content;
+        btnAction.hidden = this.action.hidden;
         break;
       }
 
       case 'dismiss':
-        this.#nodes.btnDissmiss.hidden = this?.dismiss?.hidden;
+        this.#nodes.btnDissmiss.hidden = this.dismiss.hidden;
         break;
     }
   }
