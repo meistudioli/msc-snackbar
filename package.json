@@ -1,6 +1,6 @@
 {
   "name": "msc-snackbar",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "<msc-snackbar /> provide brief messages about app processes at the bottom of the screen. It's a web component and applied Material Design - Snackbar's spec.",
   "main": "index.html",
   "scripts": {

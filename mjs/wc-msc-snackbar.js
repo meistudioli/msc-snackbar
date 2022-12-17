@@ -337,6 +337,7 @@ export class MscSnackbar extends HTMLElement {
   set action(value) {
     if (value) {
       const newValue = {
+        ...defaults.action,
         ...this.action,
         ...(typeof value === 'string' ? JSON.parse(value) : value)
       };
@@ -353,6 +354,7 @@ export class MscSnackbar extends HTMLElement {
   set dismiss(value) {
     if (value) {
       const newValue = {
+        ...defaults.dismiss,
         ...this.dismiss,
         ...(typeof value === 'string' ? JSON.parse(value) : value)
       };
@@ -393,7 +395,7 @@ export class MscSnackbar extends HTMLElement {
   _onMouseAct(evt) {
     clearTimeout(this.#data.iid);
 
-    if (evt.type === 'mouseover') {
+    if (evt.type === 'mouseout') {
       this._activeAutoDissmiss();
     }
   }
