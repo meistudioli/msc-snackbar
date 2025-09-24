@@ -16,7 +16,7 @@
 ```html
 <script
   type="module"
-  src="https://your-domain/wc-msc-snackbar.js">        
+  src="https://unpkg.com/msc-snackbar/mjs/wc-msc-snackbar.js">        
 </script>
 ```
 
