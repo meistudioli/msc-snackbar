@@ -5,7 +5,7 @@
 
 &lt;msc-snackbar /> provide brief messages about app processes at the bottom of the screen. It's a web component and applied Material Design - Snackbar's spec.
 
-![<msc-zoom />](https://blog.lalacube.com/mei/img/preview/msc-snackbar.png)
+![<msc-snackbar />](https://blog.lalacube.com/mei/img/preview/msc-snackbar.png)
 
 ## Basic Usage
 
@@ -28,23 +28,19 @@ Put &lt;msc-snacker /> into HTML document. It will have different functions and 
 <msc-snackbar>
   <script type="application/json">
     {
-      "active": false,
-      "stack": false,
-      "label": "messages",
-      "action": {
-        "content": "action",
-        "hidden": true,
-        "params": {
-          ...
-        }
-      },
-      "dismiss": {
-        "auto": true,
-        "hidden": true,
-        "duration": 5000
-      }
+      "duration": 99999,
+      "actioncontent": "Action"
     }
   </script>
+</msc-snackbar>
+```
+
+Otherwise, developers could also choose remoteconfig to fetch config for &lt;msc-snackbar />.
+
+```html
+<msc-snackbar
+  remoteconfig="https://your-domain/api-path"
+>
 </msc-snackbar>
 ```
 
@@ -54,41 +50,27 @@ Put &lt;msc-snacker /> into HTML document. It will have different functions and 
 
 ```html
 <script type="module">
-import { MscSnackbar } from 'https://your-domain/wc-msc-snackbar.js';
+import { MscSnackbar } from 'https://unpkg.com/msc-snackbar/mjs/wc-msc-snackbar.js';
 
 // use DOM api
 const nodeA = document.createElement('msc-snackbar');
 document.body.appendChild(nodeA);
-nodeA.label = 'Put message here to let user aware';
-nodeA.active = true;
+nodeA.show('Show me the money.');
 
 // new instance with Class
 const nodeB = new MscSnackbar();
 document.body.appendChild(nodeB);
-nodeB.label = 'Put message here to let user aware';
-nodeB.active = true;
+nodeB.duration = 5;
+nodeB.show('Show me the money.');
 
 // new instance with Class & default config
 const config = {
-  active: false,
-  stack: false,
-  label: 'messages',
-  action: {
-    content: 'action',
-    hidden: true,
-    params: {
-      ...
-    }
-  },
-  dismiss: {
-    auto: true,
-    hidden: true,
-    duration: 5000
-  }
+  duration: 10,
+  actioncontent: 'OK'
 };
 const nodeC = new MscSnackbar(config);
 document.body.appendChild(nodeC);
-nodeC.active = true;
+nodeC.show('Show me the money.');
 </script>
 ```
 
@@ -99,17 +81,18 @@ Developers could apply styles to decorate &lt;msc-snackbar /> margin distance.
 ```html
 <style>
 msc-snackbar {
-  --msc-snackbar-margin-inline: 16px;
-  --msc-snackbar-margin-block-end: 16px;
+  --msc-snackbar-action-button-color: rgba(208 188 255);
 }
 </style>
 ```
 
-Otherwise, apply class - `msc-snackbar--leading` to make &lt;msc-snackbar /> align flex-start.
+Otherwise, developers could set data attribute to change layout direction and button display.
 
 ```html
 <msc-snackbar
-  class="msc-snackbar--leading"
+  data-direction="stack"
+  data-hide-action-button
+  data-hide-dismiss-button
 >
   ...
 </msc-snackbar>
@@ -119,88 +102,49 @@ Otherwise, apply class - `msc-snackbar--leading` to make &lt;msc-snackbar /> ali
 
 &lt;msc-snackbar /> supports some attributes to let it become more convenience & useful.
 
-- **active**
+- **duration**
 
-Set active for &lt;msc-snackbar />. It will show up once set true. Default is `false` (not set).
+Set auto dismiss duration for &lt;msc-snackbar />. Default is `99999` (seconds).
 
 ```html
 <msc-snackbar
-  active
+  duration="99999"
 >
   ...
 </msc-snackbar>
 ```
 
-- **stack**
+<hr />
 
-Set stacke for &lt;msc-snackbar /> to display stacked view. Default is `false` (not set).
+- **actioncontent**
+
+Set action button's content. Default is "`Action`".
 
 ```html
 <msc-snackbar
-  stack
+  actioncontent="Action"
 >
   ...
 </msc-snackbar>
 ```
-
-- **label**
-
-Set label for &lt;msc-snackbar />.
-
-```html
-<msc-snackbar
-  label="put message here"
->
-  ...
-</msc-snackbar>
-```
-
-- **action**
-
-Set action for &lt;msc-snackbar />. It should be JSON string. Developers could set `content`、`hidden` and extra `params` here.（`hidden` must be boolean to make action display or not, default is `true`）.
-
-```html
-<msc-snackbar
-  action='{"content":"retry","hidden":true,"params":{"origin":"extra param you like","id":"extra param you like"}}'
->
-  ...
-</msc-snackbar>
-```
-
-- **dismiss**
-
-Set dismiss for &lt;msc-snackbar />. It should be JSON string. Developers could set `auto`、`hidden` and `duration` (ms) here.
-
-`hidden` is for dismiss button display or not (default is `true`). `auto` (default is `true`) and `duration` (default is `5000`) are for auto dismiss behavior.
-
-```html
-<msc-snackbar
-  dismiss='{"auto":true,"hidden":true,"duration":5000}'
->
-  ...
-</msc-snackbar>
-```
-
 
 ## Properties
 
 | Property Name | Type | Description |
 | ----------- | ----------- | ----------- |
-| active | Boolean | 	Getter / Setter for active. It will make <msc-snackbar /> show up or not. |
-| stack | Boolean | Getter / Setter for stack. This will set stacked view once set true. Default is `false`. |
-| label | String | Getter / Setter for label. Developers could set message through this property. |
-| action | Object | Getter / Setter for action. Developers could set `content`、`hidden` and extra `params` here.（`hidden` must be boolean to make action display or not, default is `true`）. |
-| dismiss | Object | Getter / Setter for dismiss. Developers could set `auto`、`hidden` and `duration` (ms) here. `hidden` is for dismiss button display or not (default is `true`). `auto` (default is `true`) and `duration` (default is `5000`) are for auto dismiss behavior. |
-
+| duration | Number | Getter / Setter for duration (seconds) to auto dismiss. |
+| actioncontent | String | Getter / Setter for action button's content. |
+| open | Boolean | Getter for &lt;msc-snackbar />'s open state. |
 
 ## Event
 
 | Event Signature | Description |
 | ----------- | ----------- |
-| msc-snackbar-action-click | Fired when &lt;msc-snackbar />'s action has been clicked. Developers could get `params` through `event.detail`. |
-| msc-snackbar-dissmiss | Fired when <msc-snackbar /> dismiss behavior occured. |
-
+| msc-snackbar-action-click | Fired when &lt;msc-snackbar />'s action has been clicked. |
+| msc-snackbar-dismiss | Fired when &lt;msc-snackbar /> dismiss behavior occured. |
 
 ## Reference
 - [Material Design - Snackbars](https://material.io/components/snackbars)
 - [&lt;msc-snackbar />](https://blog.lalacube.com/mei/webComponent_msc-snackbar.html)
+- [WEBCOMPONENTS.ORG](https://www.webcomponents.org/element/msc-snackbar)
+- [YouTube tutorial](https://youtube.com/shorts/OT4qqLA-Pzs)

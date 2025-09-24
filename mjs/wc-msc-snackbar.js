@@ -2,26 +2,15 @@ import { _wcl } from './common-lib.js';
 import { _wccss } from './common-css.js';
 
 const defaults = {
-  active: false,
-  stack: false,
-  label: 'messages',
-  action: {
-    content: 'action',
-    hidden: true,
-    params: {}
-  },
-  dismiss: {
-    auto: true,
-    hidden: true,
-    duration: 5000
-  }
+  duration: 99999, /* seconds */
+  actioncontent: 'Action'
 };
-const booleanAttrs = ['active', 'stack'];
-const objectAttrs = ['action', 'dismiss'];
 
+const booleanAttrs = []; // booleanAttrs default should be false
+const objectAttrs = [];
 const custumEvents = {
-  click: 'msc-snackbar-action-click',
-  dissmiss: 'msc-snackbar-dissmiss'
+  action: 'msc-snackbar-action-click',
+  dismiss: 'msc-snackbar-dismiss'
 };
 
 const template = document.createElement('template');
@@ -30,112 +19,249 @@ template.innerHTML = `
 ${_wccss}
 
 :host {
-  margin-inline: var(--msc-snackbar-margin-inline, 16px);
-  margin-block-end: var(--msc-snackbar-margin-block-end, 16px);
+  position: relative;
+  display: block;
 }
-:host{position:fixed;inset-inline:0;inset-block-end:0;display:flex;pointer-events:none;user-select:none;-webkit-user-select:none;z-index:10;justify-content:center;}
+
+:host([data-direction=stack]) {
+  .snackbar {
+    --flex-direction: column;
+    --functions-align-self: flex-end;
+  }
+}
+
+:host([data-hide-action-button]) {
+  .snackbar {
+    --button-action-display: none;
+  } 
+}
+
+:host([data-hide-dismiss-button]) {
+  .snackbar {
+    --button-dismiss-display: none;
+    --padding-inline-end: .75em;
+  }
+}
+
+:host([data-hide-action-button][data-hide-dismiss-button]) {
+  .snackbar {
+    --functions-display: none;
+  }
+}
 
 .main {
-  --action-color: var(--msc-snackbar-action-color, #bb86fc);
-
-  /* something you dont wnat clients change */
-  --flex-direction: row;
-  --label-align-self: auto;
-  --actions-align-self: auto;
+  --action-button-color: var(--msc-snackbar-action-button-color, rgba(208 188 255));
 
   --min-inline-size: 344px;
-  --max-inline-size1: min(672px, calc(100vw - (var(--inset-inline-start) * 2)));
-  --max-inline-size: min(672px, 100%);
+  --max-inline-size: 672px;
 
-  --main-scale-normal: scale(.8);
-  --main-scale-active: scale(1);
-  --main-scale: var(--main-scale-normal);
+  --button-action-display: block;
+  --button-dismiss-display: grid;
 
-  --main-opacity-normal: 0;
-  --main-opacity-active: 1;
-  --main-opacity: var(--main-opacity-normal);
-
-  --main-pointer-events-normal: none;
-  --main-pointer-events-active: auto;
-  --main-pointer-events: var(--main-pointer-events-normal);
-
-  --transition-duration: 60ms;
-  --dismiss-bgc-normal: transparent;
-  --dismiss-bgc-active: rgba(232 234 237/.04);
-  --dismiss-bgc-tapped: rgba(232 234 237/.1);
-  --dismiss-bgc: var(--dismiss-bgc-normal);
-
-  --dismiss-color-normal: #9aa0a6;
-  --dismiss-color-active: #e8eaed;
-  --dismiss-color: var(--dismiss-color-normal);
-
-  --mask-dismiss: path('M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z');
-  --actions-margin-block-end: 0;
+  --flex-direction: row;
+  --functions-align-self: auto;
+  --functions-display: flex;
 }
 
-:host(.msc-snackbar--leading) {
-  justify-content: flex-start;
-}
+.snackbar {
+  --background-color: rgba(50 47 53);
 
-:host([active]) .main {
-  --main-opacity: var(--main-opacity-active);
-  --main-scale: var(--main-scale-active);
-  --main-pointer-events: var(--main-pointer-events-active);
-}
+  --margin-inline-start: max(1em, var(--safe-area-left));
+  --margin-block-end: max(1em, var(--safe-area-bottom));
+  --margin: 0 0 var(--margin-block-end) var(--margin-inline-start);
+  --inset: auto auto 0 0;
 
-:host([stack]) .main {
-  --flex-direction: column;
-  --label-align-self: flex-start;
-  --actions-align-self: flex-end;
-  --actions-margin-block-end: 8px
-}
+  --padding-inline-start: 1em;
+  --padding-inline-end: .5em;
+  --padding-block: .875em;
 
-.main{min-inline-size:var(--min-inline-size);max-inline-size:var(--max-inline-size);background-color:#333;border-radius:4px;box-sizing:border-box;display:flex;flex-direction:var(--flex-direction);align-items:center;justify-content:flex-start;box-shadow:0 3px 5px -1px rgba(0 0 0/.2),0 6px 10px 0 rgba(0 0 0/.14),0 1px 18px 0 rgba(0 0 0/.12);pointer-events:var(--main-pointer-events);}
-.main{opacity:var(--main-opacity);transform:var(--main-scale);transition:opacity .15s cubic-bezier(0,0,.2,1),transform .15s cubic-bezier(0,0,.2,1);will-change:opacity,transform;}
-.snackbar__label{padding:14px 16px;flex-grow:1;min-inline-size:0;align-self:var(--label-align-self);}
-.snackbar__label__p{font-size:14px;line-height:1.4285;color:rgba(255 255 255/.87);letter-spacing:.25px;}
-.snackbar__actions{display:flex;flex-shrink:0;margin-inline-end:8px;margin-block-end:var(--actions-margin-block-end);align-items:center;align-self:var(--actions-align-self);}
+  --gap: .75em;
 
-.snackbar__buttons{background:transparent;border-radius:unset;display:flex;align-items:center;justify-content:center;border:0 none;outline:0 none;padding:0;margin:0;}
-.snackbar__action{color:var(--action-color);font-weight:500;block-size:36px;font-size:14px;appearance:none;border:0 none;padding-inline:8px;letter-spacing:1.25px;text-decoration:none;text-transform:uppercase;}
-.snackbar__action[hidden]{display:none;}
-.snackbar__dismiss{font-size:0;inline-size:36px;block-size:36px;border-radius:36px;background-color:var(--dismiss-bgc);margin-inline-start:8px;transition:background-color var(--transition-duration) linear;will-change:background-color;}
-.snackbar__dismiss::before{inline-size:24px;block-size:24px;content:'';display:block;background-color:var(--dismiss-color);clip-path:var(--mask-dismiss);transform:scale(.75);transition:color var(--transition-duration) linear;will-change:color;}
-.snackbar__dismiss[hidden]{display:none;}
-.snackbar__dismiss:focus-visible {
-  --dismiss-color: var(--dismiss-color-active);
-  --dismiss-bgc: var(--dismiss-bgc-active);
-}
+  --button-background-tapped: rgba(255 255 255/.08);
+  --button-background-normal: transparent;
+  --button-background-active: rgba(255 255 255/.08);
+  --button-background: var(--button-background-normal);
+  --button-active-scale: .85;
 
-.snackbar__dismiss:active {
-  --dismiss-bgc: var(--dismiss-bgc-tapped);
-}
-
-@media (hover: hover) {
-  .snackbar__dismiss:hover {
-    --dismiss-color: var(--dismiss-color-active);
-    --dismiss-bgc: var(--dismiss-bgc-active);
+  @media screen and (width <= 767px) {
+    --inset: auto 0 0;
+    --margin: 0 auto var(--margin-block-end) auto;
   }
 
-  .snackbar__dismiss:active:hover {
-    --dismiss-bgc: var(--dismiss-bgc-tapped);
+  position: fixed;
+  inline-size: 100%;
+  inset: var(--inset);
+  background: transparent;
+  border: 0 none;
+  z-index: 2147483647;
+
+  /* popover */
+  &:popover-open {
+    transition-timing-function: cubic-bezier(0,.86,.18,1);
+    transition-duration: 300ms;
+    transform: translateY(0) scaleY(1);
+    opacity: 1;
+
+    @starting-style {
+      transform: translateY(-20px) scaleY(0);
+      opacity: 0;
+    }
+  }
+
+  transform: translateY(-30px) scaleY(1);
+  transform-origin: 100% 100%;
+  opacity: 0;
+  
+  transition:
+    transform 200ms ease-out,
+    opacity 200ms,
+    display 200ms;
+  transition-behavior: allow-discrete;
+
+  .snackbar__main {
+    inline-size: fit-content;
+    min-inline-size: min(var(--min-inline-size), var(--max-inline-size));
+    max-inline-size: min(
+      max(var(--min-inline-size), var(--max-inline-size)),
+      calc(100% - var(--margin-inline-start) * 2)
+    );
+    min-block-size: 3em;
+
+    padding-inline: var(--padding-inline-start) var(--padding-inline-end);
+    padding-block: var(--padding-block);
+    margin: var(--margin);
+    box-sizing: border-box;
+
+    border-radius: .25em;
+    background-color: var(--background-color);
+    box-shadow:
+      0 3px 5px -1px rgba(0 0 0/.2),
+      0 6px 10px 0 rgba(0 0 0/.14),
+      0 1px 18px 0 rgba(0 0 0/.12);
+    
+    display: flex;
+    flex-direction: var(--flex-direction);
+    gap: var(--gap);
+    align-items: center;
+  }
+
+  .snackbar__main__label {
+    flex-grow: 1;
+    min-inline-size: 0;
+
+    font-size: .875em;
+    line-height: 1.4285;
+    color: rgba(229 229 229);
+
+    word-break: break-word;
+    hyphens: auto;
+    text-wrap: pretty;
+    text-autospace: normal;
+  }
+
+  .snackbar__main__functions {
+    flex-shrink: 0;
+    align-self: var(--functions-align-self);
+
+    display: var(--functions-display);
+    gap: var(--gap);
+    align-items: center;
+
+    button {
+      flex-shrink: 0;
+      font-size: 0;
+      appearance: none;
+      box-shadow: unset;
+      border: unset;
+      background: transparent;
+      -webkit-user-select: none;
+      user-select: none;
+      pointer-events: auto;
+      margin: 0;
+      padding: 0;
+      outline: 0 none;
+
+      background: var(--button-background);
+      transition: background 60ms linear;
+      will-change: background;
+
+      &:focus-visible {
+        --button-background: var(--button-background-active);
+      }
+
+      &:active {
+        --button-background: var(--button-background-tapped);
+        scale: var(--button-active-scale);
+      }
+
+      @media (hover: hover) {
+        &:hover {
+          --button-background: var(--button-background-active);
+        }
+      }
+    }
+
+    .snackbar__main__functions__action {
+      font-size: .875em;
+      font-weight: 500;
+      color: var(--action-button-color);
+      padding: .5em 1em;
+      display: var(--button-action-display);
+      border-radius: 2em;
+    }
+
+    .snackbar__main__functions__dismiss {
+      --button-size: 28;
+      --button-size-with-unit: calc(var(--button-size) * 1px);
+      --button-icon-scale-rate: .75;
+
+      --button-icon: rgba(228 228 228);
+      --button-icon-scale-basis: calc((var(--button-size) * var(--button-icon-scale-rate)) / 24);
+      --button-active-scale: .85;
+
+      inline-size: var(--button-size-with-unit);
+      aspect-ratio: 1/1;
+      border-radius: var(--button-size-with-unit);
+      
+      display: var(--button-dismiss-display);
+      place-content: center;
+
+      &::before {
+        content: '';
+        inline-size: 24px;
+        aspect-ratio: 1/1;
+        background: var(--button-icon);
+        clip-path: path('M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z');
+        display: block;
+        scale: var(--button-icon-scale-basis);
+      }
+    }
   }
 }
 </style>
 
-<div class="main">
-  <div class="snackbar__label">
-    <p class="snackbar__label__p line-clampin">
-      ${defaults.label}
-    </p>
-  </div>
-  <div class="snackbar__actions">
-    <button type="button" class="snackbar__buttons snackbar__action" data-type="action">
-      ${defaults.action.content}
-    </button>
-    <button type="button" class="snackbar__buttons snackbar__dismiss" data-type="dismiss">
-      close
-    </button>
+<div class="main" ontouchstart="" tabindex="0">
+  <div class="snackbar" popover="hint">
+    <div class="snackbar__main">
+      <p class="snackbar__main__label line-clampin"></p>
+
+      <div class="snackbar__main__functions">
+        <button
+          type="button"
+          class="snackbar__main__functions__action"
+          data-act="action"
+        >
+          Action
+        </button>
+        <button
+          type="button"
+          class="snackbar__main__functions__dismiss"
+          data-act="dismiss"
+        >
+          dismiss
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 `;
@@ -144,10 +270,10 @@ ${_wccss}
 if (CSS?.registerProperty) {
   try {
     CSS.registerProperty({
-      name: '--msc-snackbar-action-color',
+      name: '--msc-snackbar-action-button-color',
       syntax: '<color>',
       inherits: true,
-      initialValue: '#bb86fc'
+      initialValue: 'rgba(208 188 255)'
     });
   } catch(err) {
     console.warn(`msc-snackbar: ${err.message}`);
@@ -163,22 +289,22 @@ export class MscSnackbar extends HTMLElement {
     super();
 
     // template
-    this.attachShadow({ mode: 'open', delegatesFocus: false });
+    this.attachShadow({ mode: 'open', delegatesFocus: true });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     // data
     this.#data = {
       controller: '',
-      iid: ''
+      tid: ''
     };
 
     // nodes
     this.#nodes = {
-      styleSheet: this.shadowRoot.querySelector('style'),
       main: this.shadowRoot.querySelector('.main'),
-      label: this.shadowRoot.querySelector('.snackbar__label__p'),
-      btnAction: this.shadowRoot.querySelector('.snackbar__action'),
-      btnDissmiss: this.shadowRoot.querySelector('.snackbar__dismiss')
+      snackbar: this.shadowRoot.querySelector('.snackbar'),
+      snackbarMain: this.shadowRoot.querySelector('.snackbar__main'),
+      label: this.shadowRoot.querySelector('.snackbar__main__label'),
+      btnAction: this.shadowRoot.querySelector('.snackbar__main__functions__action')
     };
 
     // config
@@ -188,12 +314,14 @@ export class MscSnackbar extends HTMLElement {
     };
 
     // evts
-    this._onMouseAct = this._onMouseAct.bind(this);
     this._onClick = this._onClick.bind(this);
+    this._onToggle = this._onToggle.bind(this);
+    this._onMouseAction = this._onMouseAction.bind(this);
   }
 
   async connectedCallback() {
    const { config, error } = await _wcl.getWCConfig(this);
+   const { snackbar, snackbarMain } = this.#nodes;
 
     if (error) {
       console.warn(`${_wcl.classToTagName(this.constructor.name)}: ${error}`);
@@ -207,14 +335,19 @@ export class MscSnackbar extends HTMLElement {
     }
 
     // upgradeProperty
-    Object.keys(defaults).forEach((key) => this._upgradeProperty(key));
+    Object.keys(defaults).forEach((key) => this.#upgradeProperty(key));
 
     // evts
     this.#data.controller = new AbortController();
     const signal = this.#data.controller.signal;
-    this.#nodes.main.addEventListener('mouseover', this._onMouseAct, { signal });
-    this.#nodes.main.addEventListener('mouseout', this._onMouseAct, { signal });
-    this.#nodes.main.addEventListener('click', this._onClick, { signal });
+    snackbar.addEventListener('toggle', this._onToggle, { signal });
+    snackbar.addEventListener('click', this._onClick, { signal });
+
+    if (!_wcl.isEventSupport('touchstart')) {
+      ['mouseenter', 'mousemove', 'mouseleave'].forEach(
+        (event) => snackbarMain.addEventListener(event, this._onMouseAction, { signal })
+      );
+    }
   }
 
   disconnectedCallback() {
@@ -223,7 +356,7 @@ export class MscSnackbar extends HTMLElement {
     }
   }
 
-  _format(attrName, oldValue, newValue) {
+  #format(attrName, oldValue, newValue) {
     const hasValue = newValue !== null;
 
     if (!hasValue) {
@@ -234,19 +367,17 @@ export class MscSnackbar extends HTMLElement {
       }
     } else {
       switch (attrName) {
-        case 'active':
-        case 'stack':
-          this.#config[attrName] = true;
+        case 'duration': {
+          const num = +newValue;
+          this.#config[attrName] = (isNaN(num) || num <= 0) ? defaults.duration : num;
           break;
+        }
 
-        case 'label':
-          this.#config[attrName] = newValue;
+        case 'actioncontent': {
+          const content = newValue.trim();
+          this.#config[attrName] = content || defaults.actioncontent;
           break;
-
-        case 'action':
-        case 'dismiss':
-          this.#config[attrName] = JSON.parse(newValue);
-          break;
+        }
       }
     }
   }
@@ -256,23 +387,19 @@ export class MscSnackbar extends HTMLElement {
       return;
     }
 
-    this._format(attrName, oldValue, newValue);
+    this.#format(attrName, oldValue, newValue);
 
     switch (attrName) {
-      case 'label':
-        this.#nodes.label.textContent = this.label;
+      case 'duration':
+        if (this.open) {
+          this.#setCurtaincall();
+        }
         break;
 
-      case 'action': {
-        const { btnAction } = this.#nodes;
-        btnAction.textContent = this.action.content || defaults.action.content;
-        btnAction.hidden = this.action.hidden;
+      case 'actioncontent': {
+        this.#nodes.btnAction.textContent = this.actioncontent;
         break;
       }
-
-      case 'dismiss':
-        this.#nodes.btnDissmiss.hidden = this.dismiss.hidden;
-        break;
     }
   }
 
@@ -280,7 +407,15 @@ export class MscSnackbar extends HTMLElement {
     return Object.keys(defaults); // MscSnackbar.observedAttributes
   }
 
-  _upgradeProperty(prop) {
+  static get supportedEvents() {
+    return Object.keys(custumEvents).map(
+      (key) => {
+        return custumEvents[key];
+      }
+    );
+  }
+
+  #upgradeProperty(prop) {
     let value;
 
     if (MscSnackbar.observedAttributes.includes(prop)) {
@@ -301,74 +436,35 @@ export class MscSnackbar extends HTMLElement {
     }
   }
 
-  set active(value) {
-    clearTimeout(this.#data.iid);
-    this.toggleAttribute('active', Boolean(value));
-
-    if (this.active) {
-      this._activeAutoDissmiss();
-    }
-  }
-
-  get active() {
-    return this.#config.active;
-  }
-
-  set stack(value) {
-    this.toggleAttribute('stack', Boolean(value));
-  }
-
-  get stack() {
-    return this.#config.stack;
-  }
-
-  set label(value) {
+  set duration(value) {
     if (value) {
-      this.setAttribute('label', value);
+      this.setAttribute('duration', value);
     } else {
-      this.removeAttribute('label');
+      this.removeAttribute('duration');
     }
   }
 
-  get label() {
-    return this.#config.label;
+  get duration() {
+    return this.#config.duration;
   }
 
-  set action(value) {
+  set actioncontent(value) {
     if (value) {
-      const newValue = {
-        ...defaults.action,
-        ...this.action,
-        ...(typeof value === 'string' ? JSON.parse(value) : value)
-      };
-      this.setAttribute('action', JSON.stringify(newValue));
+      this.setAttribute('actioncontent', value);
     } else {
-      this.removeAttribute('action');
+      this.removeAttribute('actioncontent');
     }
   }
 
-  get action() {
-    return this.#config.action;
+  get actioncontent() {
+    return this.#config.actioncontent;
   }
 
-  set dismiss(value) {
-    if (value) {
-      const newValue = {
-        ...defaults.dismiss,
-        ...this.dismiss,
-        ...(typeof value === 'string' ? JSON.parse(value) : value)
-      };
-      this.setAttribute('dismiss', JSON.stringify(newValue));
-    } else {
-      this.removeAttribute('dismiss');
-    }
+  get open() {
+    return !!this.#nodes.main.querySelector('*:popover-open');
   }
 
-  get dismiss() {
-    return this.#config.dismiss;
-  }
-
-  _fireEvent(evtName, detail) {
+  #fireEvent(evtName, detail) {
     this.dispatchEvent(new CustomEvent(evtName,
       {
         bubbles: true,
@@ -378,26 +474,14 @@ export class MscSnackbar extends HTMLElement {
     ));
   }
 
-  _activeAutoDissmiss() {
-    const { auto = true, duration = 3000 } = this.dismiss;
+  #setCurtaincall() {
+    clearTimeout(this.#data.tid);
 
-    clearTimeout(this.#data.iid);
-    
-    if (auto && _wcl.isNumeric(duration)) {
-      this.#data.iid = setTimeout(
-        () => {
-          this.#nodes.btnDissmiss.click();
-        }
-      , duration);
-    }
-  }
-
-  _onMouseAct(evt) {
-    clearTimeout(this.#data.iid);
-
-    if (evt.type === 'mouseout') {
-      this._activeAutoDissmiss();
-    }
+    this.#data.tid = setTimeout(
+      () => {
+        this.hide();
+      }
+    , this.duration * 1000);
   }
 
   _onClick(evt) {
@@ -407,16 +491,50 @@ export class MscSnackbar extends HTMLElement {
       return;
     }
 
-    evt.preventDefault();
-    clearTimeout(this.#data.iid);
+    this.hide();
 
-    if (button.dataset.type === 'action') {
-      this._fireEvent(custumEvents.click, { params: { ...this.action.params } });
-    } else {
-      this._fireEvent(custumEvents.dissmiss);
+    if (button.dataset.act === 'action') {
+      this.#fireEvent(custumEvents.action);
     }
+  }
 
-    this.active = false;
+  _onToggle(evt) {
+    const { newState } = evt;
+
+    clearTimeout(this.#data.tid);
+
+    if (newState === 'closed') {
+      this.#fireEvent(custumEvents.dismiss);
+    } else {
+      this.#setCurtaincall();
+    }
+  }
+
+  _onMouseAction(evt) {
+    const { type } = evt;
+
+    switch (type) {
+      case 'mousemove':
+      case 'mouseenter': {
+        clearTimeout(this.#data.tid);
+        break;
+      }
+
+      case 'mouseleave':
+        this.#setCurtaincall();
+        break;
+    }
+  }
+
+  show(content = '') {
+    const { snackbar, label } = this.#nodes;
+
+    label.textContent = content.trim();
+    snackbar.togglePopover(true);
+  }
+
+  hide() {
+    this.#nodes.snackbar.togglePopover(false);
   }
 }
 

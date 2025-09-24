@@ -5,123 +5,264 @@
 <title>Web Component: &lt;msc-snackbar /&gt; - web components based message indicate effect</title>
 <meta name="description" content="<msc-snackbar /> provide brief messages about app processes at the bottom of the screen. It's a web component and applied Material Design - Snackbar's spec." />
 <script type="module" src="mjs/wc-msc-snackbar.js"></script>
+<link rel="stylesheet" href="https://blog.lalacube.com/mei/css/wc-base.css">
+<link rel="stylesheet" href="https://blog.lalacube.com/mei/css/layers/defaults.css">
+<link rel="stylesheet" href="https://blog.lalacube.com/mei/css/layers/buttons.css">
+<link rel="stylesheet" href="https://blog.lalacube.com/mei/css/layers/input-set.css">
+<link rel="stylesheet" href="https://blog.lalacube.com/mei/css/layers/radio-set.css">
 <style>
-/* reset */
-div,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,legend,input,textarea,p,article,aside,figcaption,figure,nav,section,mark,audio,video,main{margin:0;padding:0}
-article,aside,figcaption,figure,nav,section,main{display:block}
-fieldset,img{border:0}
-address,caption,cite,em,strong{font-style:normal;font-weight:400}
-ol,ul{list-style:none}
-caption{text-align:left}
-h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:400}
-abbr{border:0;font-variant:normal}
-input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}
-body{-webkit-text-size-adjust:none}
-select,input,button,textarea{font:100% arial,helvetica,clean,sans-serif;}
-del{font-style:normal;text-decoration:none}
-pre{font-family:monospace;line-height:100%}
-progress{-webkit-appearance:none;appearance:none;overflow:hidden;border:0 none;}
-
-/* page */
-html,body{font-family:system-ui,sans-serif;text-size-adjust:100%;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;font-size:16px;}
 #hd,#ft{display:none;}
+body{position:relative;inline-size:100vw;block-size:100vh;margin:0;}
 
-body{position:relative;inline-size:100vw;block-size:100vh;}
-.triggers{position:absolute;inset-inline-start:50%;inset-block-start:50%;inline-size:260px;transform:translate(-50%,-50%);}
-.ypp-trigger{font-size:1.125em;color:#b60845;width:100%;height:2.77em;line-height:2.55;box-sizing:border-box;border:2px solid #b60845;border-radius:2.77em;text-align:center;text-transform:uppercase;transition:color 250ms ease,border-color 250ms ease;will-change:color,border-color;cursor:pointer;letter-spacing:.2em;display:block;user-select:none;text-decoration:none}
-.ypp-trigger:hover{font-weight:400;color:#db004d;border-color:#db004d;}
-.ypp-trigger{--ripple-color:rgba(182,8,69,.2);--duration:1.2s;}
+.wrap {
+  inline-size: 100%;
+  max-inline-size: min(600px, calc(100% - 2em));
+  box-sizing: border-box;
+}
 
-.ypp-trigger:nth-of-type(1){color:#4a8af1;border-color:#4a8af1;--ripple-color:rgba(74,138,241,.2);}
-.ypp-trigger:nth-of-type(1):hover{color:#1b71fa;border-color:#1b71fa;}
+.demo-wrap {
+  inline-size: 100%;
 
-.ypp-trigger:nth-of-type(2){color:#b60845;border-color:#b60845;--ripple-color:rgba(112,58,217,.2);}
-.ypp-trigger:nth-of-type(2):hover{color:#db004d;border-color:#db004d;}
+  .buttons__wrap {
+    --accent-color: var(--dory);
+    --background-color: rgba(220 226 240);
 
-.ypp-trigger+.ypp-trigger{margin-top:2em;}
+    position: relative;
+    outline: 0 none;
+    inline-size: 100%;
+    display: grid;
+    place-content: center;
+    border-radius: 1em;
+    background-color: var(--background-color);
+    overflow: hidden;
+    padding-block: 3em;
 
-.ypp-wrap{position:fixed;inset-inline-start:0;inset-block-start:0;inline-size:0;block-size:0;background-color:#fff;z-index:1000;pointer-events:none;overflow:hidden;}
-.ypp-wrap--active{inline-size:100%;block-size:100%;pointer-events:auto;}
+    @media (prefers-color-scheme: dark) {
+      --background-color: rgba(29 34 40);
+      --accent-color: 75 168 248;
+    }
 
-/* msc-snackbar */
-msc-snackbar:not(:defined){display:none;}
-@supports (bottom:env(safe-area-inset-top)) {
-  msc-snackbar {
-    --msc-snackbar-margin-block-end: calc(env(safe-area-inset-bottom) + 16px);
+    .buttons[data-type='secondary1'] {
+      --default-text-color: rgba(var(--accent-color));
+    }
+
+    .buttons__wrap__set {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5em;
+
+      .buttons {
+        --icon: path('M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z');
+
+        gap: .5em;
+
+        &.buttons--image {
+          --icon: path('M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z');
+        }
+
+        &.buttons--video {
+          --icon: path('M10 8v8l5-4-5-4zm9-5H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z');
+        }
+
+        em {
+          font-size: 0;
+          inline-size: 24px;
+          aspect-ratio: 1/1;
+          display:block;
+          background-color: rgba(var(--accent-color));
+          overflow: hidden;
+          clip-path: var(--icon);
+        }
+      }
+    }
   }
 }
+
+msc-snackbar:not(:defined){display:none;}
 </style>
 </head>
 
-<body>
+<body class="flex-center">
+<div class="wrap">
+  <div class="demo-wrap">
+    <div class="buttons__wrap">
+      <button
+        type="button"
+        class="buttons"
+        data-type="secondary1"
+        data-size="large"
+      >
+        SUMMON
+      </button>
+    </div>
 
-<div class="triggers">
-  <a href="#showSnackbar" class="ypp-trigger" data-type="basic">Basic</a>
-  <a href="#showSnackbar" class="ypp-trigger" data-type="staced">Stacked</a>
+    <form class="setting-form">
+      <ul class="adjustments">
+        <li class="adjustments__row">
+          <p class="adjustments__row__subject">Direction：</p>
+          <div class="adjustments__row__content">
+            <div class="il-pair a11y-block-link">
+              <div class="radio-set">
+                <input id="direction-0" type="radio" name="direction" value="row" checked />
+                <label class="radio-set__label" for="direction-0"></label>
+              </div>
+
+              <label for="direction-0">
+                row
+              </label>
+            </div>
+
+            <div class="il-pair a11y-block-link">
+              <div class="radio-set">
+                <input id="direction-1" type="radio" name="direction" value="stack" />
+                <label class="radio-set__label" for="direction-1"></label>
+              </div>
+
+              <label for="direction-1">
+                stack
+              </label>
+            </div>
+          </div>
+        </li>
+
+        <li class="adjustments__row">
+          <p class="adjustments__row__subject">Action button：</p>
+          <div class="adjustments__row__content">
+            <div class="il-pair a11y-block-link">
+              <div class="radio-set">
+                <input id="action-button-0" type="radio" name="action-button" value="show" checked />
+                <label class="radio-set__label" for="action-button-0"></label>
+              </div>
+
+              <label for="action-button-0">
+                show
+              </label>
+            </div>
+
+            <div class="il-pair a11y-block-link">
+              <div class="radio-set">
+                <input id="action-button-1" type="radio" name="action-button" value="hide" />
+                <label class="radio-set__label" for="action-button-1"></label>
+              </div>
+
+              <label for="action-button-1">
+                hide
+              </label>
+            </div>
+          </div>
+        </li>
+
+        <li class="adjustments__row">
+          <p class="adjustments__row__subject">Dismiss button：</p>
+          <div class="adjustments__row__content">
+            <div class="il-pair a11y-block-link">
+              <div class="radio-set">
+                <input id="dismiss-button-0" type="radio" name="dismiss-button" value="show" checked />
+                <label class="radio-set__label" for="dismiss-button-0"></label>
+              </div>
+
+              <label for="dismiss-button-0">
+                show
+              </label>
+            </div>
+
+            <div class="il-pair a11y-block-link">
+              <div class="radio-set">
+                <input id="dismiss-button-1" type="radio" name="dismiss-button" value="hide" />
+                <label class="radio-set__label" for="dismiss-button-1"></label>
+              </div>
+
+              <label for="dismiss-button-1">
+                hide
+              </label>
+            </div>
+          </div>
+        </li>
+
+        <li class="adjustments__row">
+          <p class="adjustments__row__subject">Duration：</p>
+          <div class="adjustments__row__content">
+            <div class="input-set input-set--hide-label">
+              <select name="duration">
+                <option value="-1" disabled>Select duration</option>
+                <option value="5">5 seconds</option>
+                <option value="10">10 seconds</option>
+                <option value="15">15 seconds</option>
+                <option value="20">20 seconds</option>
+                <option value="25">25 seconds</option>
+                <option value="30">30 seconds</option>
+              </select>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </form>
+  </div>
+
+  <msc-snackbar>
+    <script type="application/json">
+      {
+        "duration": 5,
+        "actioncontent": "Action"
+      }
+    </script>
+  </msc-snackbar>
 </div>
 
-<msc-snackbar>
-  <script type="application/json">
-    {
-      "active": false,
-      "stack": false,
-      "label": "message here",
-      "action": {
-        "content": "ok",
-        "hidden": false,
-        "params": {
-          "id": "mei"
-        }
-      },
-      "dismiss": {
-        "auto": true,
-        "hidden": false,
-        "duration": 8000
-      }
-    }
-  </script>
-</msc-snackbar>
-
-<script>
+<script type="module">
 customElements.whenDefined('msc-snackbar').then(() => {
-  const events = ['msc-snackbar-action-click', 'msc-snackbar-dissmiss'];
   const snackbar = document.querySelector('msc-snackbar');
-  const hero = document.querySelector('.triggers');
+  const trigger = document.querySelector('.demo-wrap button');
+  const form = document.querySelector('.setting-form');
+  const snackbarClass = customElements.get('msc-snackbar');
+  const { supportedEvents } = snackbarClass;
 
   const handler = (evt) => {
-    console.log(evt);
+    evt.preventDefault();
+
+    const { type } = evt;
+
+    switch (type) {
+      case 'msc-snackbar-action-click':
+      case 'msc-snackbar-dismiss': {
+        console.log(
+          `%cmsc-snackbar%c > %c${type}%c`,
+          'font-size:12px;line-height:1.3;background:#3a99d8;color:#fff;border-radius:3px;padding:0 4px;',
+          'font-size:12px;line-height:1.3;',
+          'font-size:12px;line-height:1.3;color:#a4f6b7;',
+          'font-size:12px;line-height:1.3;'
+        );
+        break;
+      }
+
+      case 'click': {
+        snackbar.show('This is <msc-snackbar />\'s basic usage. Put message here to let user aware.');
+        break;
+      }
+
+      case 'input': {
+        const formData = new FormData(form);
+        const fd = Object.fromEntries(formData.entries());
+
+        snackbar.dataset.direction = fd['direction'];
+        snackbar.toggleAttribute('data-hide-action-button', fd['action-button'] === 'hide');
+        snackbar.toggleAttribute('data-hide-dismiss-button', fd['dismiss-button'] === 'hide');
+        snackbar.duration = +fd['duration'];
+        break;
+      }
+    }
   };
 
-  events.forEach(
-    (eventName) => {
-      snackbar.addEventListener(eventName, handler);
+  // event
+  supportedEvents.forEach(
+    (event) => {
+      snackbar.addEventListener(event, handler);
     }
   );
-
-  hero.addEventListener('click',
-    (evt) => {
-      const anchor = evt.target.closest('a');
-
-      if (!anchor) {
-        return;
-      }
-
-      evt.preventDefault();
-
-      if (anchor.dataset.type === 'basic') {
-        snackbar.label = 'This is basic usage. Put message here to let user aware.';
-        snackbar.stack = false;
-      } else {
-        snackbar.label = 'This Snackbar will render as stacked view for other usage.';
-        snackbar.stack = true;
-      }
-
-      snackbar.active = true;
-    }
-  )
+  trigger.addEventListener('click', handler);
+  form.addEventListener('input', handler);
 });
 </script>
-
 </body>
 
 </html>
