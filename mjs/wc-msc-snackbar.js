@@ -529,12 +529,20 @@ export class MscSnackbar extends HTMLElement {
   show(content = '') {
     const { snackbar, label } = this.#nodes;
 
-    label.textContent = content.trim();
-    snackbar.togglePopover(true);
+    content = content.trim();
+    
+    if (snackbar?.togglePopover) {
+      label.textContent = content;
+      snackbar.togglePopover(true);
+      this.#setCurtaincall();
+    } else {
+      // fallback, use alert
+      alert(content);
+    }
   }
 
   hide() {
-    this.#nodes.snackbar.togglePopover(false);
+    this.#nodes.snackbar?.togglePopover?.(false);
   }
 }
 
